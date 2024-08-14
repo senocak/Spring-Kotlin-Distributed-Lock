@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:14.2-alpine
+    container_name: distributed-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: distributed
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./var/logs/postgresql:/var/log/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - distributed
+  redis:
+    image: redis:7.0.5-alpine
+    container_name: distributed-redis
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass senocak
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - distributed
+volumes:
+  db-data:
+  redis-data:
+networks:
+  distributed:

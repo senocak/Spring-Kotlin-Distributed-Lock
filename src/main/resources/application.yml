@@ -1,0 +1,41 @@
+server:
+    port: ${SERVER_PORT:8099}
+spring:
+    application:
+        name: Spring-Kotlin-DistributedLock
+    jpa:
+        hibernate:
+            ddl-auto: update
+        #properties:
+        #    hibernate:
+        #        dialect: org.hibernate.dialect.PostgreSQLDialect
+        #        show_sql: true
+        #        format_sql: true
+        #        globally_quoted_identifiers: true
+    datasource:
+        url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/${POSTGRESQL_DB:distributed}?currentSchema=${POSTGRESQL_SCHEMA:public}
+        username: ${POSTGRESQL_USER:postgres}
+        password: ${POSTGRESQL_PASSWORD:senocak}
+app:
+    redis:
+        database: ${REDIS_DATABASE:0}
+        host: ${REDIS_HOST:localhost}
+        port: ${REDIS_PORT:6379}
+        password: ${REDIS_PASSWORD:senocak}
+        timeout: ${REDIS_TIMEOUT:60000}
+logging:
+    pattern:
+        console: "[Distributed Lock] %clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+    level:
+        net:
+            ttddyy:
+                dsproxy:
+                    listener: debug
+        root: INFO
+        org:
+            hibernate:
+                type: INFO
+            springframework:
+                web: ERROR
+    file:
+        name: ./var/logs/app.log
