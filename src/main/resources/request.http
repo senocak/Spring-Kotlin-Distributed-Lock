@@ -1,0 +1,7 @@
+@baseUrl=http://localhost:8099
+
+### JDBC Lock
+GET {{baseUrl}}/lock/jdbc?name=anil1
+
+### Redis Lock
+GET {{baseUrl}}/lock/redis?name=anil1

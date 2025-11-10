@@ -1,31 +1,36 @@
 version: '3.7'
 
 services:
-  db:
-    image: postgres:14.2-alpine
-    container_name: distributed-postgres
-    restart: always
+  postgres:
+    image: postgres:14
     environment:
       POSTGRES_DB: distributed
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: senocak
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./var/logs/postgresql:/var/log/postgresql
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical" # for debezium
+    #OR
+    #command: [ "postgres", "-c", "wal_level=logical" ]
     ports:
       - "5432:5432"
+    healthcheck:
+      test: "pg_isready -U postgres"
     networks:
       - distributed
-  redis:
-    image: redis:7.0.5-alpine
-    container_name: distributed-redis
-    restart: always
-    command: redis-server --save 20 1 --loglevel warning --requirepass senocak
-    volumes:
-      - redis-data:/data
+  redis-stack:
+    image: redis/redis-stack-server:7.2.0-v6
     ports:
-      - "6379:6379"
+      - "6382:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    volumes:
+      - redis_data:/data
     networks:
       - distributed
 volumes:
